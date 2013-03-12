@@ -1,3 +1,5 @@
+require 'set'
+
 module IMS::LTI
   # Mixin module for managing LTI Launch Data
   #
@@ -6,7 +8,7 @@ module IMS::LTI
   module LaunchParams
 
     # List of the standard launch parameters for an LTI launch
-    LAUNCH_DATA_PARAMETERS = %w{
+    LAUNCH_DATA_PARAMETERS = Set.new(%w{
       context_id
       context_label
       context_title
@@ -48,7 +50,7 @@ module IMS::LTI
       tool_consumer_instance_url
       user_id
       user_image
-    }
+    })
 
     LAUNCH_DATA_PARAMETERS.each { |p| attr_accessor p }
 
@@ -135,7 +137,7 @@ module IMS::LTI
     # will be pulled from the provided Hash
     def process_params(params)
       params.each_pair do |key, val|
-        if LAUNCH_DATA_PARAMETERS.member?(key)
+        if LAUNCH_DATA_PARAMETERS.member?(key.to_s)
           self.send("#{key}=", val)
         elsif key =~ /custom_(.*)/
           @custom_params[$1] = val
