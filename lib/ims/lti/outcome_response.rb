@@ -105,18 +105,21 @@ module IMS::LTI
 
     # Parse Outcome Response data from XML
     def process_xml(xml)
-      doc = REXML::Document.new xml
-      @message_identifier = doc.text("//imsx_statusInfo/imsx_messageIdentifier").to_s
-      @code_major = doc.text("//imsx_statusInfo/imsx_codeMajor")
+      doc = REXML::Document.new(xml)
+      @message_identifier = text_from_node(doc, "//imsx_statusInfo/imsx_messageIdentifier")
+      @code_major = text_from_node(doc, "//imsx_statusInfo/imsx_codeMajor")
       @code_major.downcase! if @code_major
-      @severity = doc.text("//imsx_statusInfo/imsx_severity")
+      @severity = text_from_node(doc, "//imsx_statusInfo/imsx_severity")
       @severity.downcase! if @severity
-      @description = doc.text("//imsx_statusInfo/imsx_description")
-      @description = @description.to_s if @description
-      @message_ref_identifier = doc.text("//imsx_statusInfo/imsx_messageRefIdentifier")
-      @operation = doc.text("//imsx_statusInfo/imsx_operationRefIdentifier")
-      @score = doc.text("//readResultResponse//resultScore/textString")
-      @score = @score.to_s if @score
+      @description = text_from_node(doc, "//imsx_statusInfo/imsx_description")
+      @message_ref_identifier = text_from_node(doc, "//imsx_statusInfo/imsx_messageRefIdentifier")
+      @operation = text_from_node(doc, "//imsx_statusInfo/imsx_operationRefIdentifier")
+      @score = text_from_node(doc, "//readResultResponse//resultScore/textString")
+    end
+
+    def text_from_node(doc, selector)
+      node = doc.elements[selector]
+      node.text if node
     end
 
     # Generate XML based on the current configuration
